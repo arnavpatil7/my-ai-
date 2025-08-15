@@ -3,7 +3,8 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { VoiceWaveform } from './VoiceWaveform';
 import { QuickControls } from './QuickControls';
-import { Mic, MicOff, Volume2, Settings, HelpCircle } from 'lucide-react';
+import { AdvancedFeatures } from './AdvancedFeatures';
+import { Mic, MicOff, Volume2, Settings, HelpCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import aiAvatar from '@/assets/ai-avatar.png';
 
@@ -16,6 +17,7 @@ export const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ assistantName })
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [response, setResponse] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const { toast } = useToast();
   const recognition = useRef<any>(null);
 
@@ -121,10 +123,89 @@ export const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ assistantName })
       response = `Today is ${now.toLocaleDateString()}.`;
     }
     
+    // Screenshot commands
+    else if (lowerCommand.includes('take screenshot') || lowerCommand.includes('screenshot') || lowerCommand.includes('capture screen')) {
+      response = "Taking a screenshot now. Note: This requires native system permissions for full functionality.";
+      // In native app, would use platform-specific screenshot APIs
+    }
+    
+    // App launching commands
+    else if (lowerCommand.includes('open') && (lowerCommand.includes('app') || lowerCommand.includes('application'))) {
+      const appMatch = lowerCommand.match(/open\s+([\w\s]+?)(?:\s+app|\s+application|$)/);
+      const appName = appMatch ? appMatch[1].trim() : 'the requested app';
+      response = `Opening ${appName}. Note: This requires native system access to launch applications.`;
+      // In native app, would use platform-specific app launching APIs
+    }
+    else if (lowerCommand.includes('open calculator')) {
+      response = "Opening Calculator app. Note: This requires native system access.";
+    }
+    else if (lowerCommand.includes('open camera')) {
+      response = "Opening Camera app. Note: This requires native system access.";
+    }
+    else if (lowerCommand.includes('open settings')) {
+      response = "Opening Settings app. Note: This requires native system access.";
+    }
+    else if (lowerCommand.includes('open browser') || lowerCommand.includes('open chrome') || lowerCommand.includes('open safari')) {
+      response = "Opening web browser. Note: This requires native system access.";
+    }
+    
+    // Communication commands - Calling
+    else if (lowerCommand.includes('call') || lowerCommand.includes('phone')) {
+      const contactMatch = lowerCommand.match(/(?:call|phone)\s+([\w\s]+)/);
+      const contactName = contactMatch ? contactMatch[1].trim() : 'the contact';
+      response = `Initiating call to ${contactName}. Note: This requires phone permissions and contacts access.`;
+      // In native app, would use phone dialer APIs
+    }
+    
+    // Communication commands - Texting/SMS
+    else if (lowerCommand.includes('text') || lowerCommand.includes('send message') || lowerCommand.includes('send sms')) {
+      const textMatch = lowerCommand.match(/(?:text|send message to|send sms to)\s+([\w\s]+?)(?:\s+saying|\s+that|$)/);
+      const contactName = textMatch ? textMatch[1].trim() : 'the contact';
+      const messageMatch = lowerCommand.match(/(?:saying|that)\s+(.+)/);
+      const messageContent = messageMatch ? messageMatch[1] : 'your message';
+      response = `Sending text message to ${contactName}: "${messageContent}". Note: This requires SMS permissions and contacts access.`;
+      // In native app, would use SMS APIs
+    }
+    
+    // Task instruction commands
+    else if (lowerCommand.includes('remind me') || lowerCommand.includes('set reminder')) {
+      const taskMatch = lowerCommand.match(/(?:remind me to|set reminder to)\s+(.+?)(?:\s+in|\s+at|$)/);
+      const timeMatch = lowerCommand.match(/(?:in|at)\s+([\w\s]+)/);
+      const task = taskMatch ? taskMatch[1].trim() : 'complete the task';
+      const time = timeMatch ? timeMatch[1].trim() : '5 minutes';
+      response = `Setting reminder: "${task}" in ${time}. Note: This requires notification permissions for full functionality.`;
+      // In native app, would use local notifications
+    }
+    else if (lowerCommand.includes('create note') || lowerCommand.includes('take note')) {
+      const noteMatch = lowerCommand.match(/(?:create note|take note)(?:\s+about|\s+that)?\s+(.+)/);
+      const noteContent = noteMatch ? noteMatch[1].trim() : 'your note';
+      response = `Creating note: "${noteContent}". Note: This requires file system access for persistent storage.`;
+      // In native app, would save to local storage or notes app
+    }
+    else if (lowerCommand.includes('set timer') || lowerCommand.includes('start timer')) {
+      const timerMatch = lowerCommand.match(/(?:set timer|start timer)(?:\s+for)?\s+(\d+)\s*(minute|minutes|second|seconds|hour|hours)/);
+      const duration = timerMatch ? `${timerMatch[1]} ${timerMatch[2]}` : '5 minutes';
+      response = `Setting timer for ${duration}. Note: This requires background processing permissions.`;
+      // In native app, would use timer APIs
+    }
+    else if (lowerCommand.includes('set alarm')) {
+      const alarmMatch = lowerCommand.match(/set alarm(?:\s+for)?\s+([\d:]+(?:\s*[ap]m)?)/);
+      const alarmTime = alarmMatch ? alarmMatch[1] : 'the specified time';
+      response = `Setting alarm for ${alarmTime}. Note: This requires alarm/notification permissions.`;
+      // In native app, would use alarm clock APIs
+    }
+    
+    // Navigation and directions
+    else if (lowerCommand.includes('navigate to') || lowerCommand.includes('directions to') || lowerCommand.includes('go to')) {
+      const locationMatch = lowerCommand.match(/(?:navigate to|directions to|go to)\s+(.+)/);
+      const location = locationMatch ? locationMatch[1].trim() : 'the destination';
+      response = `Getting directions to ${location}. Note: This requires location permissions and maps integration.`;
+      // In native app, would open maps with directions
+    }
+    
     // Media & Volume Controls
     else if (lowerCommand.includes('volume up')) {
       response = "Increasing system volume. Note: This requires native system access for full functionality.";
-      // In a native app, this would control actual system volume
     }
     else if (lowerCommand.includes('volume down')) {
       response = "Decreasing system volume. Note: This requires native system access for full functionality.";
@@ -134,7 +215,6 @@ export const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ assistantName })
     }
     else if (lowerCommand.includes('play') || lowerCommand.includes('pause')) {
       response = "Controlling media playback. Note: This requires native system access for full functionality.";
-      // In native app, would use MediaSession API or system controls
     }
     else if (lowerCommand.includes('next') && (lowerCommand.includes('track') || lowerCommand.includes('song'))) {
       response = "Skipping to next track. Note: This requires native system access for full functionality.";
@@ -188,22 +268,26 @@ export const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ assistantName })
       response = "I'd love to help with weather information. This feature will be available soon with weather API integration.";
     }
     else if (lowerCommand.includes('help') || lowerCommand.includes('what can you do')) {
-      response = `I'm ${assistantName}, your AI assistant. I can help with:
+      response = `I'm ${assistantName}, your comprehensive AI assistant. I can help with:
         
-        Time & Date: "What time is it?", "What's the date?"
+        📱 Device Control: "Take screenshot", "Open [app name]", "Volume up/down", "Brightness up/down"
         
-        Media Controls: "Volume up/down", "Mute", "Play/Pause", "Next/Previous track"
+        📞 Communication: "Call [contact]", "Text [contact] saying [message]"
         
-        System Controls: "Brightness up/down", "Turn Wi-Fi on/off", "Lock", "Sleep", "Shutdown", "Restart"
+        ⏰ Tasks & Reminders: "Remind me to [task]", "Set timer for [time]", "Set alarm for [time]", "Create note about [topic]"
         
-        System Info: "How is my PC?", "System status"
+        🗺️ Navigation: "Navigate to [location]", "Directions to [place]"
         
-        Note: Some features require native app permissions for full functionality.`;
+        🖥️ System: "Wi-Fi on/off", "Lock", "Sleep", "Shutdown", "System status"
+        
+        📅 Info: "What time is it?", "What's the date?"
+        
+        Note: Advanced features require native app deployment with proper permissions.`;
     }
     
     // Default response
     else {
-      response = `I heard you say: "${command}". Try asking about time, date, system controls, or say "help" to see what I can do!`;
+      response = `I heard you say: "${command}". Try commands like "take screenshot", "open camera", "call mom", "text dad saying hello", "remind me to buy groceries", or say "help" for full capabilities!`;
     }
 
     setTimeout(() => {
@@ -261,6 +345,22 @@ export const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ assistantName })
             </div>
           </div>
         </Card>
+
+        {/* Advanced Features Toggle */}
+        <div className="flex justify-center">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowAdvanced(!showAdvanced)}
+            className="text-muted-foreground gap-2"
+          >
+            {showAdvanced ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            {showAdvanced ? 'Hide Advanced Features' : 'Show Advanced Features'}
+          </Button>
+        </div>
+
+        {/* Advanced Features Panel */}
+        {showAdvanced && <AdvancedFeatures assistantName={assistantName} />}
 
         {/* Quick Controls */}
         <QuickControls onCommand={processCommand} />

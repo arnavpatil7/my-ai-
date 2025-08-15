@@ -15,7 +15,12 @@ import {
   Power,
   RotateCcw,
   Lock,
-  Monitor
+  Monitor,
+  Camera,
+  Phone,
+  MessageSquare,
+  Clock,
+  Navigation
 } from 'lucide-react';
 
 interface QuickControlsProps {
@@ -24,16 +29,16 @@ interface QuickControlsProps {
 
 export const QuickControls: React.FC<QuickControlsProps> = ({ onCommand }) => {
   const controls = [
+    { icon: Camera, label: 'Screenshot', command: 'take screenshot' },
+    { icon: Phone, label: 'Call Contact', command: 'call mom' },
+    { icon: MessageSquare, label: 'Send Text', command: 'text dad saying hello' },
+    { icon: Clock, label: 'Set Reminder', command: 'remind me to call back in 1 hour' },
     { icon: Volume2, label: 'Volume Up', command: 'volume up' },
     { icon: VolumeX, label: 'Mute', command: 'mute' },
-    { icon: Play, label: 'Play/Pause', command: 'play pause' },
-    { icon: SkipForward, label: 'Next Track', command: 'next track' },
     { icon: Sun, label: 'Brightness Up', command: 'brightness up' },
-    { icon: Moon, label: 'Brightness Down', command: 'brightness down' },
-    { icon: Wifi, label: 'Wi-Fi Toggle', command: 'turn wifi on' },
-    { icon: Lock, label: 'Lock System', command: 'lock' },
+    { icon: Navigation, label: 'Navigate', command: 'navigate to home' },
     { icon: Monitor, label: 'System Status', command: 'system status' },
-    { icon: Power, label: 'Sleep', command: 'sleep' },
+    { icon: Lock, label: 'Lock System', command: 'lock' },
   ];
 
   return (
