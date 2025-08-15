@@ -2,41 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* AI Voice Assistant Design System - Futuristic & Modern */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Core Background Colors */
+    --background: 220 27% 8%;
+    --foreground: 200 100% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    /* Card & Surface Colors */
+    --card: 220 20% 12%;
+    --card-foreground: 200 100% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    /* Popover Colors */
+    --popover: 220 25% 10%;
+    --popover-foreground: 200 100% 95%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* AI Assistant Brand Colors */
+    --primary: 195 100% 55%;
+    --primary-foreground: 220 27% 8%;
+    --primary-glow: 195 100% 65%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary Colors */
+    --secondary: 220 15% 18%;
+    --secondary-foreground: 200 100% 90%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted Colors */
+    --muted: 220 12% 15%;
+    --muted-foreground: 200 20% 65%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent Colors */
+    --accent: 195 80% 25%;
+    --accent-foreground: 200 100% 95%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Status Colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 200 100% 95%;
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Border & Input */
+    --border: 220 15% 20%;
+    --input: 220 15% 20%;
+    --ring: 195 100% 55%;
 
-    --radius: 0.5rem;
+    /* AI Assistant Specific Colors */
+    --ai-voice-active: 195 100% 55%;
+    --ai-voice-inactive: 220 15% 25%;
+    --ai-glow: 195 100% 55%;
+    --ai-pulse: 195 100% 65%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(195 100% 45%), hsl(195 100% 65%));
+    --gradient-secondary: linear-gradient(135deg, hsl(220 20% 12%), hsl(220 25% 18%));
+    --gradient-glow: linear-gradient(135deg, hsl(195 100% 55% / 0.3), hsl(195 100% 65% / 0.1));
+    --gradient-voice: linear-gradient(90deg, hsl(195 100% 45%), hsl(180 100% 50%), hsl(165 100% 45%));
+
+    /* Shadows & Effects */
+    --shadow-glow: 0 0 30px hsl(195 100% 55% / 0.3);
+    --shadow-card: 0 8px 32px hsl(220 50% 4% / 0.8);
+    --shadow-voice: 0 0 20px hsl(195 100% 55% / 0.6);
+
+    /* Animation Properties */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -101,5 +132,72 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer components {
+  /* AI Voice Assistant Components */
+  .ai-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .ai-pulse {
+    animation: pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  .voice-wave {
+    animation: voice-wave 1.5s ease-in-out infinite;
+  }
+
+  .voice-active {
+    animation: voice-active 0.8s ease-in-out infinite alternate;
+  }
+
+  /* Voice Wave Animation */
+  @keyframes voice-wave {
+    0%, 100% { transform: scaleY(0.3); }
+    50% { transform: scaleY(1); }
+  }
+
+  @keyframes voice-active {
+    0% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+    100% { transform: scale(1.05) rotate(180deg); opacity: 1; }
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { 
+      box-shadow: 0 0 20px hsl(195 100% 55% / 0.3);
+      transform: scale(1);
+    }
+    50% { 
+      box-shadow: 0 0 40px hsl(195 100% 55% / 0.6);
+      transform: scale(1.02);
+    }
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    background: var(--gradient-voice);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: gradient-shift 3s ease infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* Floating Animation */
+  .float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
   }
 }
