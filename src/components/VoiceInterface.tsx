@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { VoiceWaveform } from './VoiceWaveform';
-import { Mic, MicOff, Volume2, Settings } from 'lucide-react';
+import { QuickControls } from './QuickControls';
+import { Mic, MicOff, Volume2, Settings, HelpCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import aiAvatar from '@/assets/ai-avatar.png';
 
@@ -105,22 +106,104 @@ export const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ assistantName })
     const lowerCommand = command.toLowerCase();
     let response = '';
 
+    // Greeting commands
     if (lowerCommand.includes('hello') || lowerCommand.includes('hi')) {
       response = `Hello! I'm ${assistantName}. How can I assist you today?`;
-    } else if (lowerCommand.includes('time')) {
+    }
+    
+    // Time and date commands
+    else if (lowerCommand.includes('time')) {
       const now = new Date();
       response = `The current time is ${now.toLocaleTimeString()}.`;
-    } else if (lowerCommand.includes('date')) {
+    } 
+    else if (lowerCommand.includes('date')) {
       const now = new Date();
       response = `Today is ${now.toLocaleDateString()}.`;
-    } else if (lowerCommand.includes('name')) {
+    }
+    
+    // Media & Volume Controls
+    else if (lowerCommand.includes('volume up')) {
+      response = "Increasing system volume. Note: This requires native system access for full functionality.";
+      // In a native app, this would control actual system volume
+    }
+    else if (lowerCommand.includes('volume down')) {
+      response = "Decreasing system volume. Note: This requires native system access for full functionality.";
+    }
+    else if (lowerCommand.includes('mute')) {
+      response = "Muting system audio. Note: This requires native system access for full functionality.";
+    }
+    else if (lowerCommand.includes('play') || lowerCommand.includes('pause')) {
+      response = "Controlling media playback. Note: This requires native system access for full functionality.";
+      // In native app, would use MediaSession API or system controls
+    }
+    else if (lowerCommand.includes('next') && (lowerCommand.includes('track') || lowerCommand.includes('song'))) {
+      response = "Skipping to next track. Note: This requires native system access for full functionality.";
+    }
+    else if (lowerCommand.includes('previous') && (lowerCommand.includes('track') || lowerCommand.includes('song'))) {
+      response = "Going to previous track. Note: This requires native system access for full functionality.";
+    }
+    
+    // Brightness Controls
+    else if (lowerCommand.includes('brightness up')) {
+      response = "Increasing screen brightness. Note: This requires native system access for full functionality.";
+    }
+    else if (lowerCommand.includes('brightness down')) {
+      response = "Decreasing screen brightness. Note: This requires native system access for full functionality.";
+    }
+    
+    // Wi-Fi Controls
+    else if (lowerCommand.includes('wifi on') || lowerCommand.includes('wi-fi on') || lowerCommand.includes('turn wifi on')) {
+      response = "Turning Wi-Fi on. Note: This requires native system permissions for full functionality.";
+    }
+    else if (lowerCommand.includes('wifi off') || lowerCommand.includes('wi-fi off') || lowerCommand.includes('turn wifi off')) {
+      response = "Turning Wi-Fi off. Note: This requires native system permissions for full functionality.";
+    }
+    
+    // Power Controls
+    else if (lowerCommand.includes('shutdown') || lowerCommand.includes('shut down')) {
+      response = "System shutdown command received. Note: This requires native system permissions to execute.";
+    }
+    else if (lowerCommand.includes('restart') || lowerCommand.includes('reboot')) {
+      response = "System restart command received. Note: This requires native system permissions to execute.";
+    }
+    else if (lowerCommand.includes('sleep')) {
+      response = "Putting system to sleep. Note: This requires native system permissions for full functionality.";
+    }
+    else if (lowerCommand.includes('lock')) {
+      response = "Locking the system. Note: This requires native system permissions for full functionality.";
+    }
+    
+    // System Status
+    else if (lowerCommand.includes('how is my pc') || lowerCommand.includes('system status') || lowerCommand.includes('performance')) {
+      const memoryInfo = (navigator as any).deviceMemory || 'unknown';
+      const connectionType = (navigator as any).connection?.effectiveType || 'unknown';
+      response = `System status: Device memory: ${memoryInfo}GB, Connection: ${connectionType}. For detailed system monitoring, native app access is required.`;
+    }
+    
+    // Assistant info
+    else if (lowerCommand.includes('name')) {
       response = `My name is ${assistantName}. I'm your AI voice assistant.`;
-    } else if (lowerCommand.includes('weather')) {
+    }
+    else if (lowerCommand.includes('weather')) {
       response = "I'd love to help with weather information. This feature will be available soon with weather API integration.";
-    } else if (lowerCommand.includes('help')) {
-      response = `I'm ${assistantName}, your AI assistant. You can ask me about the time, date, weather, or just have a conversation. Try saying hello, asking for the time, or any other question!`;
-    } else {
-      response = `I heard you say: "${command}". I'm still learning, but I'm here to help! Try asking about the time, date, or say hello.`;
+    }
+    else if (lowerCommand.includes('help') || lowerCommand.includes('what can you do')) {
+      response = `I'm ${assistantName}, your AI assistant. I can help with:
+        
+        Time & Date: "What time is it?", "What's the date?"
+        
+        Media Controls: "Volume up/down", "Mute", "Play/Pause", "Next/Previous track"
+        
+        System Controls: "Brightness up/down", "Turn Wi-Fi on/off", "Lock", "Sleep", "Shutdown", "Restart"
+        
+        System Info: "How is my PC?", "System status"
+        
+        Note: Some features require native app permissions for full functionality.`;
+    }
+    
+    // Default response
+    else {
+      response = `I heard you say: "${command}". Try asking about time, date, system controls, or say "help" to see what I can do!`;
     }
 
     setTimeout(() => {
@@ -179,6 +262,9 @@ export const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ assistantName })
           </div>
         </Card>
 
+        {/* Quick Controls */}
+        <QuickControls onCommand={processCommand} />
+
         {/* Transcript & Response */}
         {(transcript || response) && (
           <Card className="p-6 bg-secondary/50 border border-border/30">
@@ -199,6 +285,15 @@ export const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ assistantName })
 
         {/* Quick Actions */}
         <div className="flex justify-center space-x-4">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-muted-foreground"
+            onClick={() => processCommand('help')}
+          >
+            <HelpCircle className="w-4 h-4 mr-2" />
+            Help
+          </Button>
           <Button variant="ghost" size="sm" className="text-muted-foreground">
             <Settings className="w-4 h-4 mr-2" />
             Settings
