@@ -8,6 +8,3 @@ This project is built with:
 - React
 - shadcn-ui
 - Tailwind CSS
-
-
-Yes, you can!
