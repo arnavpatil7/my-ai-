@@ -1,4 +1,4 @@
-# Welcome to your my-ai- project
+# Welcome to my-ai- project
 
 ## Project info
 This project is built with:
